@@ -31,4 +31,20 @@ def n_fraction(seq: str) -> float:
     seq_length(seq)
     validate_sequence(seq)
     return seq.count("N") / len(seq)
+#fastq
+def mean_quality(phred: Sequence[int]) -> float:
+    if phred is None:
+        raise ValueError("Qualities is None")
+    if len(phred) == 0:
+        raise ValueError("Empty qualities")
+    return sum(phred) / len(phred)
+
+
+def q30_fraction(phred: Sequence[int]) -> float:
+    if phred is None:
+        raise ValueError("Qualities is None")
+    if len(phred) == 0:
+        raise ValueError("Empty qualities")
+    return sum(1 for q in phred if q >= 30) / len(phred)
+
 

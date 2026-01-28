@@ -32,3 +32,26 @@ from src.metrics import n_fraction
 
 def test_n_fraction_basic():
     assert n_fraction("ACNN") == approx(0.5)
+#test_fastq
+from src.metrics import mean_quality, q30_fraction
+
+
+def test_mean_quality_basic():
+    assert mean_quality([30, 30, 40, 10]) == approx(27.5)
+
+
+def test_q30_fraction_basic():
+    assert q30_fraction([29, 30, 40, 10]) == approx(0.5)
+
+
+def test_quality_none_raises():
+    import pytest
+    with pytest.raises(ValueError):
+        mean_quality(None)
+
+
+def test_quality_empty_raises():
+    import pytest
+    with pytest.raises(ValueError):
+        q30_fraction([])
+
