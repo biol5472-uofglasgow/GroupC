@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from typing import Optional, List, Tuple
 import os
 import csv
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 @dataclass
 class Record:
@@ -63,3 +65,8 @@ def read_samples_tsv(path: str) -> List[Tuple[str, str,str]]:
             samples.append((row["sample_id"], row["path"],row["batch"]))
     return samples
 
+if __name__ == "__main__":
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    data_file = BASE_DIR / "data" / "sampleA.fastq"
+    for fas in read_records(data_file):
+        print(fas)
