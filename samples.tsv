@@ -1,0 +1,3 @@
+sample_id	path	batch
+sampleA	data/sampleA.fastq	batch1
+sampleB	data/sampleB.fastq	batch2
