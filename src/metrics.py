@@ -8,3 +8,18 @@ def seq_length(seq: str) -> int:
     if len(seq) == 0:
         raise ValueError("Empty sequence")
     return len(seq)
+VALID_BASES = set("ACGTN")
+
+
+def validate_sequence(seq: str) -> None:
+    bad = set(seq) - VALID_BASES
+    if bad:
+        raise ValueError(f"Invalid bases found: {''.join(sorted(bad))}")
+
+
+def gc_fraction(seq: str) -> float:
+    seq = seq.upper()
+    seq_length(seq)
+    validate_sequence(seq)
+    gc = seq.count("G") + seq.count("C")
+    return gc / len(seq)

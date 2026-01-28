@@ -9,3 +9,19 @@ def test_seq_length_normal():
 def test_seq_length_empty_raises():
     with pytest.raises(ValueError):
         seq_length("")
+from pytest import approx
+from src.metrics import gc_fraction
+
+
+def test_gc_fraction_basic():
+    assert gc_fraction("ACGT") == approx(0.5)
+
+
+def test_gc_fraction_with_n():
+    assert gc_fraction("ACNN") == approx(0.25)
+
+
+def test_gc_fraction_invalid_base_raises():
+    import pytest
+    with pytest.raises(ValueError):
+        gc_fraction("ACGTX")
