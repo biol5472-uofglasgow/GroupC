@@ -8,7 +8,7 @@ def seq_length(seq: str) -> int:
     if len(seq) == 0:
         raise ValueError("Empty sequence")
     return len(seq)
-#gc_fraction
+#gc fraction
 VALID_BASES = set("ACGTN")
 
 
@@ -25,7 +25,7 @@ def gc_fraction(seq: str) -> float:
     gc = seq.count("G") + seq.count("C")
     return gc / len(seq)
 
-#n_fraction
+#n fraction
 def n_fraction(seq: str) -> float:
     seq = seq.upper()
     seq_length(seq)
