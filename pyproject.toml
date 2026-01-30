@@ -18,3 +18,5 @@ fastq-tool = "fastq_tool.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+[tool.setuptools.package-data]
+qc_tools = ["py.typed"]
