@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/fastq_tool.egg-info/PKG-INFO
+src/fastq_tool.egg-info/SOURCES.txt
+src/fastq_tool.egg-info/dependency_links.txt
+src/fastq_tool.egg-info/entry_points.txt
+src/fastq_tool.egg-info/requires.txt
+src/fastq_tool.egg-info/top_level.txt
+src/qc_tools/cli.py
+src/qc_tools/metrics.py
+src/qc_tools/read.py
+test/test_fasta.py
+test/test_metrics.py
