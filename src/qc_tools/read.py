@@ -12,6 +12,8 @@ class Record:
     seq_id: str
     sequence: str
     qualities: Optional[List[int]]  # FASTA = None, FASTQ = [phred...]
+    def __str__(self) -> str:
+        return f"{self.seq_id}\t{self.sequence}\t{self.qualities}"
 
 def read_fasta(path: str) -> Iterator[Record]:
     try:
@@ -59,14 +61,20 @@ def read_samples_tsv(path: str) -> List[Tuple[str, str,str]]:
     samples = []
     with open(path, newline="") as f:
         reader = csv.DictReader(f, delimiter="\t")
-        if "sample_id" not in reader.fieldnames or "path" not in reader.fieldnames:
-            raise ValueError("samples.tsv must contain 'sample_id' and 'path'")
+        required = {"sample_id", "path", "batch"}
+        if not required.issubset(reader.fieldnames or []):
+            raise ValueError(
+                "samples.tsv must contain columns: sample_id, path, batch"
+            )
         for row in reader:
             samples.append((row["sample_id"], row["path"],row["batch"]))
     return samples
 
 if __name__ == "__main__":
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    BASE_DIR = Path(__file__).resolve().parents[2]
     data_file = BASE_DIR / "data" / "sampleA.fastq"
+    sample_file = BASE_DIR / "samples.tsv"
     for fas in read_records(data_file):
         print(fas)
+    for sam in read_samples_tsv(sample_file):
+        print(sam)
