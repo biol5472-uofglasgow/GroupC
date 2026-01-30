@@ -15,7 +15,7 @@ class Record:
     def __str__(self) -> str:
         return f"{self.seq_id}\t{self.sequence}\t{self.qualities}"
 
-def read_fasta(path: str) -> Iterator[Record]:
+def read_fasta(path: str | Path) -> Iterator[Record]:
     try:
         for rec in SeqIO.parse(path, "fasta"):
             yield Record(
@@ -26,7 +26,7 @@ def read_fasta(path: str) -> Iterator[Record]:
     except Exception as e:
         raise ValueError(f"Failed to read FASTA file: {path}") from e
 
-def read_fastq(path: str) -> Iterator[Record]:
+def read_fastq(path: str | Path) -> Iterator[Record]:
     try:
         for rec in SeqIO.parse(path, "fastq"):
             seq = str(rec.seq).upper()
@@ -48,7 +48,7 @@ def read_fastq(path: str) -> Iterator[Record]:
         raise ValueError(f"Failed to read FASTQ file: {path}") from e
 
 
-def read_records(path: str):
+def read_records(path: str | Path):
     ext = os.path.splitext(path)[1].lower()
     if ext in [".fa", ".fasta", ".fna"]:
         return read_fasta(path)
@@ -57,7 +57,7 @@ def read_records(path: str):
     else:
         raise ValueError(f"Unsupported file format: {path}")
 
-def read_samples_tsv(path: str) -> List[Tuple[str, str,str]]:
+def read_samples_tsv(path: str | Path) -> List[Tuple[str, str,str]]:
     samples = []
     with open(path, newline="") as f:
         reader = csv.DictReader(f, delimiter="\t")
