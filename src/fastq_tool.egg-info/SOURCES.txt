@@ -6,8 +6,10 @@ src/fastq_tool.egg-info/dependency_links.txt
 src/fastq_tool.egg-info/entry_points.txt
 src/fastq_tool.egg-info/requires.txt
 src/fastq_tool.egg-info/top_level.txt
+src/qc_tools/__init__.py
 src/qc_tools/cli.py
 src/qc_tools/metrics.py
+src/qc_tools/py.typed
 src/qc_tools/read.py
-test/test_fasta.py
-test/test_metrics.py
+tests/test_fasta.py
+tests/test_metrics.py
