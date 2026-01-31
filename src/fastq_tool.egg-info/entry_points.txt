@@ -1,0 +1,2 @@
+[console_scripts]
+fastq-tool = qc_tools.cli:main

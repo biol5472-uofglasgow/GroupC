@@ -14,6 +14,8 @@ dependencies = [
 [project.scripts]
 # This allows you to run "fastq-tool" in the command line
 # It points to: src/fastq_tool/main.py function called main
+
+
 fastq-tool = "qc_tools.main:main"
 
 [tool.setuptools.packages.find]
