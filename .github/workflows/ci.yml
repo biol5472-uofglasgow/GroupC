@@ -36,9 +36,9 @@ jobs:
     - name: Lint with flake8
       run: |
         # Stop the build if there are Python syntax errors or undefined names
-        flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src test --count --select=E9,F63,F7,F82 --show-source --statistics
         # Check for style issues (e.g. lines too long), but don't fail the build for minor things (exit-zero)
-        flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 src test --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     # Run Type Checker (Static Tooling Requirement )
     # Checks that you aren't trying to divide strings by integers, etc.
