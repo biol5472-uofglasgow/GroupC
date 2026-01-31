@@ -35,7 +35,7 @@ def test_tool_runs_end_to_end():
     # capture_output=True lets us see the error message if it crashes
     result = subprocess.run(command, capture_output=True, text=True)
 
-    # 5. CHECK RESULTS (The "Gate")
+    
     
     # check if the code crash (Exit code 0 means Success, 1 means Error)
     assert result.returncode == 0, f"Tool crashed! Error log:\n{result.stderr}"
