@@ -34,7 +34,7 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
         for r in fq:
             name = r.name
             seq = r.seq.upper()
-            qual = r.qual
+            qual = r.quali
             if qual is None:
                 print(f"Skipping invalid read {name}: missing quality")
                 continue
@@ -47,12 +47,10 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
                 )
                 continue
 
-            qualities = [ord(c) - 33 for c in qual]
-
             yield Record(
                 seq_id=name,
                 sequence=seq,
-                qualities=qualities
+                qualities=qual
             )
 
     except Exception as e:
