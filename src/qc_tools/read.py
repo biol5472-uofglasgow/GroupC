@@ -6,7 +6,7 @@ import os
 import csv
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[2]
-import pyfastx
+import pyfastx # type: ignore
 
 @dataclass
 class Record:
