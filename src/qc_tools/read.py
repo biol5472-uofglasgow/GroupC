@@ -6,6 +6,7 @@ import os
 import csv
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[2]
+import pyfastx # type: ignore
 
 @dataclass
 class Record:
@@ -26,27 +27,36 @@ def read_fasta(path: str | Path) -> Iterator[Record]:
     except Exception as e:
         raise ValueError(f"Failed to read FASTA file: {path}") from e
 
+
 def read_fastq(path: str | Path) -> Iterator[Record]:
     try:
-        for rec in SeqIO.parse(path, "fastq"):
-            seq = str(rec.seq).upper()
-            quals = rec.letter_annotations.get("phred_quality")
+        fq = pyfastx.Fastq(str(path))
+        for r in fq:
+            name = r.name
+            seq = r.seq.upper()
+            qual = r.qual
+            if qual is None:
+                print(f"Skipping invalid read {name}: missing quality")
+                continue
 
-            if quals is None:
-                raise ValueError(f"Missing quality scores in FASTQ: {rec.id}")
-            if len(seq) != len(quals):
-                raise ValueError(
-                    f"Sequence/quality length mismatch in {rec.id}"
+            if len(seq) != len(qual):
+                print(
+                    f"Skipping invalid read {name}: "
+                    f"sequence/quality length mismatch "
+                    f"({len(seq)} vs {len(qual)})"
                 )
+                continue
+
+            qualities = [ord(c) - 33 for c in qual]
 
             yield Record(
-                seq_id=rec.id,
+                seq_id=name,
                 sequence=seq,
-                qualities=quals
+                qualities=qualities
             )
+
     except Exception as e:
         raise ValueError(f"Failed to read FASTQ file: {path}") from e
-
 
 def read_records(path: str | Path):
     ext = os.path.splitext(path)[1].lower()
@@ -72,9 +82,6 @@ def read_samples_tsv(path: str | Path) -> List[Tuple[str, str,str]]:
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parents[2]
-    data_file = BASE_DIR / "data" / "sampleA.fastq"
-    sample_file = BASE_DIR / "samples.tsv"
-    for fas in read_records(data_file):
+    data_file = BASE_DIR / "data" / "sampleB.fastq"
+    for fas in read_fastq(data_file):
         print(fas)
-    for sam in read_samples_tsv(sample_file):
-        print(sam)
