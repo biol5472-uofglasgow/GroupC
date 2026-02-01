@@ -33,7 +33,7 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
         fq = pyfastx.Fastq(str(path))
         for r in fq:
             name = r.name
-            seq = r.seq.upper()
+            seq = r.seq.strip().upper()
             qual = r.quali
             if qual is None:
                 print(f"Skipping invalid read {name}: missing quality")
