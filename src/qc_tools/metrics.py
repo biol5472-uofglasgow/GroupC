@@ -10,13 +10,22 @@ VALID_BASES = set("ACGTN")
 def validate_sequence(seq: str) -> str:
     if seq is None:
         raise ValueError("Sequence is None")
-    seq = seq.upper()
+
+    
+    seq = seq.strip().upper()
+
     if len(seq) == 0:
         raise ValueError("Empty sequence")
+
     bad = set(seq) - VALID_BASES
     if bad:
-        raise ValueError(f"Invalid bases found: {''.join(sorted(bad))}")
+        
+        raise ValueError(
+            f"Invalid bases found: {sorted(bad)!r} in sequence {seq!r}"
+        )
+
     return seq
+
 
 
 def seq_length(seq: str) -> int:
