@@ -85,7 +85,13 @@ def summarise_records(records: Iterable[Record]) -> Dict[str, Any]:
             q30s.append(q30_fraction(r.qualities))
 
     if n == 0:
-        raise ValueError("No records found")
+        return {
+            "n_seqs_or_reads": 0,
+            "total_bases": 0,
+            "mean_len": 0,
+            "gc_fraction": 0,
+            "n_fraction": 0,
+        }
 
     out: Dict[str, Any] = {
         "n_seqs_or_reads": n,
@@ -100,3 +106,4 @@ def summarise_records(records: Iterable[Record]) -> Dict[str, Any]:
         out["q30_fraction"] = sum(q30s) / len(q30s)
 
     return out
+

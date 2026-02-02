@@ -38,6 +38,13 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
             if qual is None:
                 print(f"Skipping invalid read {name}: missing quality")
                 continue
+            # NEW: filter invalid bases (keep minimal change)
+            ok = set("ACGTN")
+            bad = set(seq) - ok
+            if bad:
+                print(f"Skipping invalid read {name}: invalid bases {sorted(bad)!r}")
+                continue
+
 
             if len(seq) != len(qual):
                 print(
