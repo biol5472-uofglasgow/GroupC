@@ -8,6 +8,7 @@ from qc_tools.metrics import (
     mean_quality,
     q30_fraction,
     summarise_records,
+    validate_sequence
 )
 from qc_tools.read import Record
 
@@ -83,3 +84,32 @@ def test_summarise_records_fastq():
     assert out["total_bases"] == 8
     assert "mean_qual" in out
     assert "q30_fraction" in out
+
+
+
+def test_empty_input():
+    # check if the script return zero-filled dict and does not crash
+    out = summarise_records([])
+    assert out["n_seqs_or_reads"] == 0
+    assert out["mean_len"] == 0
+
+def test_mixed_case():
+    # it test on dummy and check the script should treat "acgt" same as "ACGT"
+    records = [Record("r1", "acgt", None)]
+    out = summarise_records(records)
+    assert out["total_bases"] == 4
+    assert out["gc_fraction"] == 0.5
+
+def test_summarise_large_dummy():
+    # simulate memory efficiency check 
+    
+    def generator():
+        for i in range(100):
+            yield Record(f"r{i}", "ACGT", None)
+            
+    out = summarise_records(generator())
+    assert out["n_seqs_or_reads"] == 100
+
+def test_normalization():
+    # check if the script handle lowercase and whitespace
+    assert validate_sequence("  acgt  ") == "ACGT"

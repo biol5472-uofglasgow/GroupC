@@ -29,7 +29,8 @@ def validate_sequence(seq: str) -> str:
 
 
 def seq_length(seq: str) -> int:
-    # keep for backward compatibility / explicitness
+    # keep for backward compatibility
+    
     seq = validate_sequence(seq)
     return len(seq)
 
@@ -62,13 +63,16 @@ def q30_fraction(phred: Sequence[int]) -> float:
 
 
 def summarise_records(records: Iterable[Record]) -> Dict[str, Any]:
+# running counters 
     n = 0
     total_bases = 0
-    lengths: list[int] = []
-    gcs: list[float] = []
-    ns: list[float] = []
-    mean_quals: list[float] = []
-    q30s: list[float] = []
+    sum_gc = 0.0
+    sum_n = 0.0
+    
+    # Quality counters
+    sum_mean_qual = 0.0
+    sum_q30 = 0.0
+    has_qual = False
 
     for r in records:
         n += 1
@@ -76,13 +80,13 @@ def summarise_records(records: Iterable[Record]) -> Dict[str, Any]:
         L = len(seq)
 
         total_bases += L
-        lengths.append(L)
-        gcs.append(gc_fraction(seq))
-        ns.append(n_fraction(seq))
+        sum_gc += gc_fraction(seq)
+        sum_n += n_fraction(seq)
 
         if r.qualities is not None:
-            mean_quals.append(mean_quality(r.qualities))
-            q30s.append(q30_fraction(r.qualities))
+            has_qual = True
+            sum_mean_qual += mean_quality(r.qualities)
+            sum_q30 += q30_fraction(r.qualities)
 
     if n == 0:
         return {
@@ -96,14 +100,14 @@ def summarise_records(records: Iterable[Record]) -> Dict[str, Any]:
     out: Dict[str, Any] = {
         "n_seqs_or_reads": n,
         "total_bases": total_bases,
-        "mean_len": sum(lengths) / len(lengths),
-        "gc_fraction": sum(gcs) / len(gcs),
-        "n_fraction": sum(ns) / len(ns),
+        "mean_len": total_bases/n,
+        "gc_fraction": sum_gc / n,
+        "n_fraction": sum_n / n,
     }
 
-    if mean_quals:
-        out["mean_qual"] = sum(mean_quals) / len(mean_quals)
-        out["q30_fraction"] = sum(q30s) / len(q30s)
+    if has_qual:
+        out["mean_qual"] = sum_mean_qual / n
+        out["q30_fraction"] = sum_q30 / n
 
     return out
 
