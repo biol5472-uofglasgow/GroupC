@@ -4,3 +4,4 @@ Version: 0.1.0
 Summary: A robust FASTQ QC tool
 Requires-Python: >=3.10
 Requires-Dist: biopython
+Requires-Dist: pyfastx

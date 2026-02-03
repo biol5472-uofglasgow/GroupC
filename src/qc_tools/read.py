@@ -34,11 +34,25 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
         for r in fq:
             name = r.name
             seq = r.seq.strip().upper()
-            qual = r.quali
-            if qual is None:
-                print(f"Skipping invalid read {name}: missing quality")
+            raw_qual = r.quali 
+            
+            if raw_qual is None:
+                print(f"Skipping invalid read {name} as it is missing quality")
                 continue
-            # NEW: filter invalid bases (keep minimal change)
+
+            # converting string to integers (e.g., [40, 40, 40, 40])
+            # to makes it match the Record dataclass type: List[int]
+            if isinstance(raw_qual, str):
+                qual = [ord(c) - 33 for c in raw_qual]
+            else:
+                qual = list(raw_qual)
+                
+            print(f"DEBUG: Read {name} has qualities: {qual}")
+            # if a negative number is detected  pyfastx read a Newline!
+            if any(q < 0 for q in qual):
+                 print(f"Skipping {name} as it is corrupted quality string")
+                 continue
+            # filter invalid bases (keep minimal change)
             ok = set("ACGTN")
             bad = set(seq) - ok
             if bad:
