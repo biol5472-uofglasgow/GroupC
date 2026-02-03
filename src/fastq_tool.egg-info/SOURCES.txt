@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 src/fastq_tool.egg-info/PKG-INFO
@@ -13,5 +14,6 @@ src/qc_tools/metrics.py
 src/qc_tools/py.typed
 src/qc_tools/read.py
 test/test_fasta.py
+test/test_integration.py
 test/test_metrics.py
 test/test_read.py
