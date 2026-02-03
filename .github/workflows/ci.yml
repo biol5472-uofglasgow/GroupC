@@ -1,7 +1,5 @@
 name: CI Pipeline
 
-# Trigger the workflow on push or pull request to the main branch
-# This satisfies the "Continuous integration (CI) workflow on pull requests" requirement 
 on:
   push:
     branches: [ "main" ]
@@ -12,42 +10,41 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
+    
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
     steps:
-    # Check out the repository code
     - uses: actions/checkout@v4
 
-    # 2. Set up Python (Using 3.10 is a safe standard)
-    - name: Set up Python 3.10
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip' # udpadted for Caches dependencies to speed up runs
 
-    # install dependencies
-    # We install 'flake8' (linter), 'mypy' (type checker), and 'pytest' (testing)
-    # 'pip install -e .' installs YOUR tool in editable mode so it can be tested
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 mypy pytest types-setuptools
+        # [NEW] Added 'pytest-cov' for coverage reports
+        pip install flake8 mypy pytest pytest-cov types-setuptools
         pip install -e .
 
-    # Run Linter (Static Tooling Requirement )
-    # Checks for messy code, missing spaces, or syntax errors.
     - name: Lint with flake8
       run: |
-        # Stop the build if there are Python syntax errors or undefined names
+        # Stop build if there are syntax errors
         flake8 src test --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Check for style issues (e.g. lines too long), but don't fail the build for minor things (exit-zero)
+        # treat all errors as warnings (exit-zero) for now
         flake8 src test --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    # Run Type Checker (Static Tooling Requirement )
-    # Checks that you aren't trying to divide strings by integers, etc.
     - name: Type check with mypy
       run: |
+        # Checks src folder for type consistency
         mypy src
 
-    # Run Automated Tests (Automated Testing Requirement )
-    # This runs your Unit Tests (math) and Integration Tests (CLI execution)
+    # updated to run coverage 
     - name: Run tests with pytest
       run: |
-        pytest
+        # --cov gets coverage, --cov-fail-under=80 fails if coverage is < 80%
+        pytest --cov=qc_tools --cov-report=term-missing test/
