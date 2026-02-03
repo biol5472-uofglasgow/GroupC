@@ -18,8 +18,8 @@ def test_fastq_filter(tmp_path):
 
     content = (
         "@r1\nACGT\n+\nIIII\n" #good read dummy
-        "@r2\nACGT\n+\nI\n"# mismatch dummy
         "@r3\nACZG\n+\nIIII\n"# bad characters dummy
+        "@r2\nACGT\n+\nI\n"# mismatch dummy
     )
     f.write_text(content)
 
