@@ -13,7 +13,8 @@ def test_cli_integration(tmp_path):#run tool from start to end
     # running the scripts as a subprocess and using the cli
     # using sys.executable to ensure we use the same Python environment
     cmd = [
-        sys.executable, "-m", "qc_tools.cli",  
+        sys.executable, "-m", "qc_tools.cli",
+        str(input_file),  
         "--outdir", str(output_dir)
     ]
     
