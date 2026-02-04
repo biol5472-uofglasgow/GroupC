@@ -8,7 +8,8 @@ from .read import read_records
 from .metrics import summarise_records
 
 
-def main():
+# fixed to add "-> None" to pass the PR check
+def main() -> None:
     parser = argparse.ArgumentParser(description="qc_tools cli (single input mode)")
     parser.add_argument("input", help="Input FASTA/FASTQ file")
     parser.add_argument("--outdir", default="result", help="Output directory")
@@ -25,12 +26,12 @@ def main():
 
     # write run metadata
     run_info = {
-    "tool": "qc_tools",
-    "tool_version": "0.1.0",
-    "input": str(in_path),
-    "outdir": str(out_dir),
-    "time": datetime.datetime.now().isoformat()
-}
+        "tool": "qc_tools",
+        "tool_version": "0.1.0",
+        "input": str(in_path),
+        "outdir": str(out_dir),
+        "time": datetime.datetime.now().isoformat()
+    }
     (out_dir / "run.json").write_text(
         json.dumps(run_info, indent=2),
         encoding="utf-8"
@@ -39,6 +40,8 @@ def main():
     # run qc
     records = read_records(in_path)
     summary = summarise_records(records)
+    
+    # fallback for empty/special fastq files using pyfastx
     if in_path.suffix.lower() in [".fq", ".fastq"] and summary.get("n_seqs_or_reads", 0) == 0:
         fq = pyfastx.Fastq(str(in_path))
         comp = fq.composition or {}
@@ -52,7 +55,6 @@ def main():
             "fallback_mode": "pyfastx_file_level",
         }
 
-
     # add basic identifiers 
     summary["sample_id"] = in_path.stem
     summary["batch"] = "NA"
@@ -60,14 +62,17 @@ def main():
     # write qc.tsv 
     keys = sorted(summary.keys())
     qc_path = out_dir / "qc.tsv"
+    
+    # updated - the 'with' block ends here so the file closes properly
     with qc_path.open("w", encoding="utf-8") as f:
         f.write("\t".join(keys) + "\n")
         f.write("\t".join(str(summary[k]) for k in keys) + "\n")
-        # write simple HTML report
+        
+    # update html generation is now outside the 'with' block
+    # to ensures qc.tsv is fully saved before we try to read it
     from .html_report import tsv_to_html
     html_path = out_dir / f"{in_path.stem}.html"
     tsv_to_html(qc_path, html_path, title=in_path.name)
-
 
     print("done:", str(qc_path))
 
