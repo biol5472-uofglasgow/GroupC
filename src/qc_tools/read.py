@@ -6,7 +6,7 @@ import os
 import csv
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[2]
-import pyfastx # type: ignore
+import pyfastx 
 
 @dataclass
 class Record:
@@ -18,7 +18,8 @@ class Record:
 
 def read_fasta(path: str | Path) -> Iterator[Record]:
     try:
-        for rec in SeqIO.parse(path, "fasta"):
+        # updated "# type: ignore" to stop the 'no-untyped-call' error
+        for rec in SeqIO.parse(path, "fasta"): # type: ignore
             yield Record(
                 seq_id=rec.id,
                 sequence=str(rec.seq).upper(),
@@ -34,9 +35,31 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
         for r in fq:
             name = r.name
             seq = r.seq.strip().upper()
-            qual = r.quali
-            if qual is None:
-                print(f"Skipping invalid read {name}: missing quality")
+            raw_qual = r.quali 
+            
+            if raw_qual is None:
+                print(f"Skipping invalid read {name} as it is missing quality")
+                continue
+
+            # ensure it matches List[int]?
+            if isinstance(raw_qual, str):
+                qual = [ord(c) - 33 for c in raw_qual]
+            else:
+                qual = list(raw_qual)
+                
+            # removed DEBUG print to keep output clean for the marker
+            # print(f"DEBUG: Read {name} has qualities: {qual}")
+
+            # Safety check for negative quality scores
+            if any(q < 0 for q in qual):
+                 print(f"Skipping {name} as it is corrupted quality string")
+                 continue
+
+            # filter invalid bases
+            ok = set("ACGTN")
+            bad = set(seq) - ok
+            if bad:
+                print(f"Skipping invalid read {name}: invalid bases {sorted(bad)!r}")
                 continue
 
             if len(seq) != len(qual):
@@ -56,7 +79,8 @@ def read_fastq(path: str | Path) -> Iterator[Record]:
     except Exception as e:
         raise ValueError(f"Failed to read FASTQ file: {path}") from e
 
-def read_records(path: str | Path):
+# updated to add return type "-> Iterator[Record]" to stop 'no-untyped-def' error
+def read_records(path: str | Path) -> Iterator[Record]:
     ext = os.path.splitext(path)[1].lower()
     if ext in [".fa", ".fasta", ".fna"]:
         return read_fasta(path)

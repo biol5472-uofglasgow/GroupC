@@ -1,1 +1,9 @@
 biopython
+pyfastx
+
+[dev]
+pytest
+pytest-cov
+flake8
+mypy
+types-setuptools
